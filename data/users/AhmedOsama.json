@@ -1,10 +1,24 @@
 {
   "passwordHash": "c780c745b935dbb835c393222504d3e05a88c86025b8fd0f06bdcf2ea5d18ab4",
   "balance": 0,
-  "pending": [],
+  "pending": [
+    {
+      "id": "mrt9z7qdunl0",
+      "name": "Unknown",
+      "amount": 3000,
+      "note": "",
+      "date": "2026-07-20T13:43:31.813Z",
+      "returned": false
+    }
+  ],
   "settings": {
     "theme": "dark",
     "lang": "en"
   },
-  "history": []
+  "history": [
+    {
+      "message": "Unknown owes 3000 back",
+      "date": "2026-07-20T13:43:31.813Z"
+    }
+  ]
 }
