@@ -23,7 +23,7 @@ const Auth = (() => {
 
   async function signUp(username, password) {
     const { data } = await GitHubStore.readUser(username);
-    if (data) throw new Error("That username already exists.");
+    if (data) throw new Error("Username is taken.");
     const passwordHash = await hash(password);
     const account = blankAccount(passwordHash);
     await GitHubStore.writeUser(username, account, null);
@@ -32,9 +32,9 @@ const Auth = (() => {
 
   async function signIn(username, password) {
     const { data } = await GitHubStore.readUser(username);
-    if (!data) throw new Error("No account found with that username.");
+    if (!data) throw new Error("Invalid username.");
     const passwordHash = await hash(password);
-    if (passwordHash !== data.passwordHash) throw new Error("Wrong password.");
+    if (passwordHash !== data.passwordHash) throw new Error("Incorrect password.");
     return data;
   }
 
