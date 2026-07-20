@@ -30,11 +30,40 @@ window.addEventListener("DOMContentLoaded", () => {
   el("btnAddPending").addEventListener("click", addPendingEntry);
 
   if (GitHubStore.hasToken()) {
-    showScreen("auth");
+    tryRestoreSession();
   } else {
     showScreen("setup");
   }
 });
+
+/* ---------- session persistence ---------- */
+async function tryRestoreSession() {
+  const savedUser = localStorage.getItem("currentUser");
+  if (!savedUser) {
+    showScreen("auth");
+    return;
+  }
+
+  setStatus("...");
+  try {
+    const stored = await GitHubStore.readUser(savedUser);
+    currentUser = savedUser;
+    currentAccount = stored.data;
+    currentSha = stored.sha;
+
+    applyTheme(currentAccount.settings.theme);
+    applyLang(currentAccount.settings.lang);
+    renderAll();
+    showScreen("app");
+    setStatus("");
+  } catch (e) {
+    // Saved session no longer valid (e.g. token revoked, account gone) — fall back to auth
+    localStorage.removeItem("currentUser");
+    showScreen("auth");
+    el("authError").textContent = e.message;
+    setStatus("");
+  }
+}
 
 /* ---------- screens ---------- */
 function showScreen(name) {
@@ -90,6 +119,7 @@ async function submitAuth() {
     currentAccount = account;
     const stored = await GitHubStore.readUser(username);
     currentSha = stored.sha;
+    localStorage.setItem("currentUser", username);
 
     applyTheme(account.settings.theme);
     applyLang(account.settings.lang);
@@ -106,6 +136,7 @@ function logout() {
   currentUser = null;
   currentAccount = null;
   currentSha = null;
+  localStorage.removeItem("currentUser");
   el("authUsername").value = "";
   el("authPassword").value = "";
   showScreen("auth");
